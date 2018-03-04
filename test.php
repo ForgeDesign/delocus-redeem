@@ -21,7 +21,10 @@ if (!$link) {
 // die();
 // $expiration_date = htmlspecialchars($_POST['expiration_date']) ;
 
+// get post variables
 $data = json_decode(file_get_contents("php://input"));
+
+// extract restaurant name from image url parameter
 $restaurant_name =  substr($data->image_url, 47);
 $restaurant_name =  substr($restaurant_name, 0, 5);
 
@@ -29,7 +32,7 @@ $restaurant_name =  substr($restaurant_name, 0, 5);
 $file = 'people.txt';
 // Open the file to get existing content
 $current = file_get_contents($file);
-// Append a new person to the file
+// Append data to the file
 $current .= $data->email;
 // Write the contents back to the file
 file_put_contents($file, $current);

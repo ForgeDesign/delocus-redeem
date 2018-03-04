@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 // phpinfo();
 $user = "root";
-$password = 'root';
+$password = 'lolipop123';
 // $password = 'SNfGlu5tNdKfD5LM';
 $db = 'delocus_redemption';
 $host = 'localhost';
@@ -16,6 +16,32 @@ if (!$link) {
     echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
     exit;
 }
+// extract restaurant name from image url parameter
+$restaurant_name =  substr($_GET['image_url'] , 47);
+$restaurant_name =  substr($restaurant_name, 0, 5);
+// check database list to see if we should display the PRINT ONLY message
+$sql_check_print_only = "SELECT * FROM `print_only_restaurants` WHERE restaurant_name='" . $restaurant_name . "'";
+// echo $sql_check_print_only;
+
+$result_print_only = $link->query($sql_check_print_only);
+// echo $result_print_only
+$show_button = true;
+$main_message = "Please have your waiter or cashier press to confirm your coupon.";
+$sub_message = "Coupon expires: " . htmlspecialchars($_GET['expiration_date']);
+
+if ($result_print_only->num_rows > 0) {
+	$main_message = "<b>This is a print only coupon!</b> Please print and show the coupon to the waiter/cashier.";
+	$show_button = false;
+} else {
+//    echo "<br> 0 results, show redeem digitally coupon stuff";
+}
+
+// var_dump($result_print_only);
+
+
+
+
+
 $expiration_date = htmlspecialchars($_GET['expiration_date']) ;
 date_default_timezone_set('America/Phoenix');
 
@@ -26,6 +52,8 @@ $today = strtotime(date("Y-m-d H:i:s"));
 // TODO: perform calulcation to set is_expired and is_redeemed
 $is_expired = false;
 $is_redeemed = false;
+
+
 
 $sql = "SELECT * FROM coupon_history WHERE email='" . htmlspecialchars($_GET['email']) . "' AND image_url='" . $_GET['image_url'] . "' AND expiration_date='" . $_GET['expiration_date'] . "'";
 // echo $sql;
@@ -50,15 +78,8 @@ if ($result->num_rows > 0) {
 $showCoupon = true;
 
 
-# check timestamp to see if coupon should be expired
-
-# check db to see if coupon is redeemed already
 
 
-
-$main_message = "Please have your waiter or cashier press to confirm your coupon.";
-$sub_message = "Coupon expires: " . htmlspecialchars($_GET['expiration_date']);
-$show_button = true;
 
 
 
@@ -110,17 +131,12 @@ mysqli_close($link);
 </div>
     <div class="container text-center">
     <br> 
-    <?php if($show_button){
+    <?php if(!$is_expired && !$is_redeemed){
         echo "<img src=" . htmlspecialchars($_GET['image_url']) . " />";
     } 
     ?>
     
 </div>
-<?php if(false)
-    echo     "<br> <img src=" . htmlspecialchars($_GET['image_url']) . "/>"
-
-    
-    ?>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
