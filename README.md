@@ -11,4 +11,9 @@ To access source files on Mac:
 
 
 1. For "print only" restaurants, go to http://165.227.204.163/phpmyadmin/ , login with credentials, and Insert a company into the ```print_only_restaurants``` table.
-2. Naming conventions of new coupons - \*Company Name Here\* - Coupon Deal Name.png     Make sure to include the asteriks! 
+2. Naming conventions of new coupons: 
+```
+ *Company Name Here* - Coupon Deal Name.png
+```
+Make sure to include the asteriks! 
+
