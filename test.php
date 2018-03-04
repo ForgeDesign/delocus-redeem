@@ -8,7 +8,7 @@ $password = 'root';
 // $password = 'SNfGlu5tNdKfD5LM';
 $db = 'delocus_redemption';
 $host = 'localhost';
-$port = 8889;
+$port = 3307;
 $link = mysqli_connect($host, $user, $password, $db, $port);
 
 if (!$link) {
@@ -39,6 +39,38 @@ file_put_contents($file, $current);
 $sql_insert = "INSERT INTO `coupon_history`(`expiration_date`, `cashier_redeemed_status`, `image_url`, `email`, `restaurant`) VALUES ('" . $data->expiration_date . "', 'true', '"   . $data->image_url . "', '" . $data->email . "', '" . $restaurant_name . "')";
 $result = $link->query($sql_insert);
 
+
+
+$dateStr = date('Y-m-d', strtotime("last Saturday"));
+$company = "DeepHire";
+$sql_check_exists = "SELECT id FROM weekly_redeems WHERE Company_Name ='".$company."' AND Week ='".$dateStr."'";
+
+
+
+
+$result2 = $link->query($sql_check_exists);
+
+if ($result2->num_rows > 0) {
+
+     $id = ($result2->fetch_assoc()['id']);
+     echo($id);
+  $sql_increment_coupon = "UPDATE weekly_redeems 
+  SET Coupons_Redeemed = Coupons_Redeemed + 1 
+  WHERE id = '".$id."'";
+  $result3 = $link->query($sql_increment_coupon);
+
+
+    
+}
+else {
+    echo("0");
+    $insert_new_date_or_company = "INSERT INTO `weekly_redeems` (`Week`, `Coupons_Redeemed`, `Company_Name`) VALUES ('".$dateStr."', 1, '".$company."')";
+
+$result4 = $link->query($insert_new_date_or_company);
+
+}
+
+// echo($dateStr);
 return("success");
 
 ?>
