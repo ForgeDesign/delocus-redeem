@@ -17,10 +17,23 @@ if (!$link) {
     exit;
 }
 // extract restaurant name from image url parameter
+
 $search_character = '*';
-$image_url = $_GET['image_url'];
-$parts = explode($search_character, $image_url);
+$expiration_date ="";
+    if (isset($_GET['expiration_date']))
+         $expiration_date= htmlspecialchars($_GET['expiration_date']);
+$email="";
+    if (isset($_GET['email']))
+         $email = htmlspecialchars($_GET['email']);
+$image_url ="";
+$restaurant_name = "";
+    if (isset($_GET['image_url'])) {
+         $image_url = htmlspecialchars($_GET['image_url']);
+        $parts = explode($search_character, $image_url);
 $restaurant_name = $parts[1];
+    }
+//$image_url = htmlspecialchars($_GET['image_url']);
+//$restaurant_name = "";  
 
 // echo $restaurant_name;
 
@@ -33,7 +46,7 @@ $result_print_only = $link->query($sql_check_print_only);
 // echo $result_print_only
 $show_button = true;
 $main_message = "Please have your waiter or cashier press to confirm your coupon.";
-$sub_message = "Coupon expires: " . htmlspecialchars($_GET['expiration_date']);
+$sub_message = "Coupon expires: " . $expiration_date;
 
 if ($result_print_only->num_rows > 0) {
 	$main_message = "<b>This is a print only coupon!</b> Please print and show the coupon to the waiter/cashier.";
@@ -48,10 +61,11 @@ if ($result_print_only->num_rows > 0) {
 
 
 
-$expiration_date = htmlspecialchars($_GET['expiration_date']) ;
+// $expiration_date = htmlspecialchars($_GET['expiration_date']) ;
+//echo $_GET['expiration_date'];
 date_default_timezone_set('America/Phoenix');
 
-$jsDateTS = strtotime(htmlspecialchars($_GET['expiration_date']) );
+$jsDateTS = strtotime($expiration_date );
 $today = strtotime(date("Y-m-d H:i:s"));
 
 
@@ -61,7 +75,7 @@ $is_redeemed = false;
 
 
 
-$sql = "SELECT * FROM coupon_history WHERE email='" . htmlspecialchars($_GET['email']) . "' AND image_url='" . $_GET['image_url'] . "' AND expiration_date='" . $_GET['expiration_date'] . "'";
+$sql = "SELECT * FROM coupon_history WHERE email='" . $email . "' AND image_url='" . $image_url . "' AND expiration_date='" . $expiration_date . "'";
 // echo $sql;
 // echo $sql;
 $result = $link->query($sql);
@@ -83,13 +97,7 @@ if ($result->num_rows > 0) {
 // echo $sql_insert;
 $showCoupon = true;
 
-
-
-
-
-
-
-if ((time() -  $jsDateTS) > 0) {
+if ( (time() -  $jsDateTS) > 0) {
     $is_expired = true;
 }
 if ((time() -  $jsDateTS) < 0) {
@@ -183,22 +191,24 @@ mysqli_close($link);
     // set the friendly greeting in header
     // $("#greetingName").text(name);
     function updateCoupon(){
-    //     alert(JSON.stringify(
-    //     profileInformation
-    //   ));
+         alert(JSON.stringify(
+         profileInformation
+       ));
     $.ajax({
       type: "POST",
-      url: "/test.php",
+      url: "./test.php",
       // The key needs to match your method's input parameter (case-sensitive).
       data: JSON.stringify(
         profileInformation
       ),
       error: function(data) {
+          console.log("error");
         console.log(data);
-        window.location.reload();
+        //window.location.reload();
 
       },
       success: function(data) {
+          console.log("success");
         console.log(data);
         window.location.reload();
 

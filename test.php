@@ -4,11 +4,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 // phpinfo();
 $user = "root";
-$password = 'root';
+$password = 'lolipop123';
 // $password = 'SNfGlu5tNdKfD5LM';
 $db = 'delocus_redemption';
 $host = 'localhost';
-$port = 3307;
+$port = 8889;
 $link = mysqli_connect($host, $user, $password, $db, $port);
 
 if (!$link) {
@@ -17,35 +17,40 @@ if (!$link) {
     echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
     exit;
 }
-// return json_encode($_POST);
-// die();
 // $expiration_date = htmlspecialchars($_POST['expiration_date']) ;
 
 // get post variables
 $data = json_decode(file_get_contents("php://input"));
 
-// extract restaurant name from image url parameter
-$restaurant_name =  substr($data->image_url, 47);
-$restaurant_name =  substr($restaurant_name, 0, 5);
-
-// $data = json_decode($data);
 $file = 'people.txt';
 // Open the file to get existing content
 $current = file_get_contents($file);
 // Append data to the file
-$current .= $data->email;
+$current .= "hello";
+// $current .= $data->$result;
 // Write the contents back to the file
 file_put_contents($file, $current);
+// return json_encode($_POST);
+ //die();
+// extract restaurant name from image url parameter
+
+$image_url =  $data->image_url;
+
+$search_character = '*';
+$parts = explode($search_character, $image_url);
+$restaurant_name = $parts[1];
+// $data = json_decode($data);
 
 
 // die();
 $sql_insert = "INSERT INTO `coupon_history`(`expiration_date`, `cashier_redeemed_status`, `image_url`, `email`, `restaurant`) VALUES ('" . $data->expiration_date . "', 'true', '"   . $data->image_url . "', '" . $data->email . "', '" . $restaurant_name . "')";
+
 $result = $link->query($sql_insert);
 
 
 
 $dateStr = date('Y-m-d', strtotime("last Saturday"));
-$company = "DeepHire";
+$company = $restaurant_name;
 $sql_check_exists = "SELECT id FROM weekly_redeems WHERE Company_Name ='".$company."' AND Week ='".$dateStr."'";
 
 
