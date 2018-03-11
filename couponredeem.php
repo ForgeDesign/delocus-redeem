@@ -17,8 +17,14 @@ if (!$link) {
     exit;
 }
 // extract restaurant name from image url parameter
-$restaurant_name =  substr($_GET['image_url'] , 47);
-$restaurant_name =  substr($restaurant_name, 0, 5);
+$search_character = '*';
+$image_url = $_GET['image_url'];
+$parts = explode($search_character, $image_url);
+$restaurant_name = $parts[1];
+
+// echo $restaurant_name;
+
+
 // check database list to see if we should display the PRINT ONLY message
 $sql_check_print_only = "SELECT * FROM `print_only_restaurants` WHERE restaurant_name='" . $restaurant_name . "'";
 // echo $sql_check_print_only;
