@@ -36,7 +36,7 @@ file_put_contents($file, $current);
 
 $image_url =  $data->image_url;
 
-$search_character = '*';
+$search_character = 'M-';
 $parts = explode($search_character, $image_url);
 $restaurant_name = $parts[1];
 // $data = json_decode($data);

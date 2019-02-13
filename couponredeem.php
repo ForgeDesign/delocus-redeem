@@ -18,7 +18,7 @@ if (!$link) {
 }
 // extract restaurant name from image url parameter
 
-$search_character = '*';
+$search_character = 'M-';
 $expiration_date ="";
     if (isset($_GET['expiration_date']))
          $expiration_date= htmlspecialchars($_GET['expiration_date']);
@@ -30,8 +30,10 @@ $restaurant_name = "";
     if (isset($_GET['image_url'])) {
          $image_url = htmlspecialchars($_GET['image_url']);
         $parts = explode($search_character, $image_url);
-$restaurant_name = $parts[1];
     }
+$restaurant_name = $parts[1];
+//echo $restaurant_name;
+//$restaurant_name = $parts[1];
 //$image_url = htmlspecialchars($_GET['image_url']);
 //$restaurant_name = "";  
 
@@ -45,12 +47,14 @@ $sql_check_print_only = "SELECT * FROM `print_only_restaurants` WHERE restaurant
 $result_print_only = $link->query($sql_check_print_only);
 // echo $result_print_only
 $show_button = true;
+$show_print_button = false;
 $main_message = "Please have your waiter or cashier press to confirm your coupon.";
 $sub_message = "Coupon expires: " . $expiration_date;
 
 if ($result_print_only->num_rows > 0) {
 	$main_message = "<b>This is a print only coupon!</b> Please print and show the coupon to the waiter/cashier.";
 	$show_button = false;
+    $show_print_button = true;
 } else {
 //    echo "<br> 0 results, show redeem digitally coupon stuff";
 }
@@ -62,10 +66,15 @@ if ($result_print_only->num_rows > 0) {
 
 
 // $expiration_date = htmlspecialchars($_GET['expiration_date']) ;
-//echo $_GET['expiration_date'];
+// echo $expiration_date;
 date_default_timezone_set('America/Phoenix');
 
-$jsDateTS = strtotime($expiration_date );
+// 12/10/2018 Ivan reported an error where the expiration date being passed by wordpress had Eastern STandard Time as the timezone. in our time comparisons, the comparison expects EST as the timezone. so we are searching for occurrences of the string Eastern Standard Time and replacing it to be EST. the system now works like normal
+
+$test =  str_replace("Eastern Standard Time", "EST", $expiration_date);
+//$jsDateTS = strtotime($expiration_date);
+$jsDateTS = strtotime($test);
+//echo $jsDateTS;
 $today = strtotime(date("Y-m-d H:i:s"));
 
 
@@ -131,14 +140,18 @@ mysqli_close($link);
     <title>Delocus - Redeem Your Coupon</title>
   </head>
   <body>
-  <div class="jumbotron jumbotron-fluid">
+  <div style="background:#FFFFFF !important" class="jumbotron jumbotron-fluid">
   <div class="container text-center">
     <h1 class="display-4">Redeem Coupon</h1>
     <p class="lead"><?php echo $main_message; ?></p>
     <p class="lead"><?php echo $sub_message; ?> </b></p>
      <?php if($show_button){
-        echo '<button type="button" onclick="updateCoupon()" class="btn btn-success btn-lg">CLICK TO REDEEM</button> ';
-    }  ?>
+        echo '<button type="button" onclick="updateCoupon()" class="btn btn-success btn-lg">CASHIER </br> CLICK TO REDEEM</button> ';
+} else {
+    if($show_print_button){
+        echo '<button type="button" onclick="printCoupon()" class="btn btn-success btn-lg">CLICK TO PRINT</button> ';
+    }
+}?>
 
 
   </div>
@@ -190,13 +203,12 @@ mysqli_close($link);
     // alert(JSON.stringify(profileInformation))
     // set the friendly greeting in header
     // $("#greetingName").text(name);
-    function updateCoupon(){
-         alert(JSON.stringify(
-         profileInformation
-       ));
+    function printCoupon(){
+     window.print();
+   /* 
     $.ajax({
       type: "POST",
-      url: "./test.php",
+      url: "/delocus-redeem/test.php",
       // The key needs to match your method's input parameter (case-sensitive).
       data: JSON.stringify(
         profileInformation
@@ -204,7 +216,39 @@ mysqli_close($link);
       error: function(data) {
           console.log("error");
         console.log(data);
-        //window.location.reload();
+     window.print();
+
+      },
+      success: function(data) {
+          console.log("success");
+        console.log(data);
+     window.print();
+
+      },
+
+      contentType: "application/json",
+      dataType: "json"
+          
+        }
+        );
+    */
+    }
+
+    function updateCoupon(){
+         //alert(JSON.stringify(
+         //profileInformation
+       //));
+    $.ajax({
+      type: "POST",
+      url: "/delocus-redeem/test.php",
+      // The key needs to match your method's input parameter (case-sensitive).
+      data: JSON.stringify(
+        profileInformation
+      ),
+      error: function(data) {
+          console.log("error");
+        console.log(data);
+        window.location.reload();
 
       },
       success: function(data) {
