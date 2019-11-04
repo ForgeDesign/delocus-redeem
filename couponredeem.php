@@ -2,8 +2,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 // phpinfo();
-$user = "root";
-$password = 'lolipop123';
+$user = "pmauser";
+$password = 'Lolipop123!';
 // $password = 'SNfGlu5tNdKfD5LM';
 $db = 'delocus_redemption';
 $host = 'localhost';
